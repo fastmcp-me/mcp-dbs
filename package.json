@@ -1,6 +1,6 @@
 {
   "name": "mcp-dbs",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "MCP TypeScript SDK for database connections",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
