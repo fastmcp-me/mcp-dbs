@@ -1,6 +1,6 @@
 {
   "name": "mcp-dbs",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "MCP TypeScript SDK for database connections",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -29,6 +29,7 @@
     "dev:cli": "cross-env NODE_ENV=development tsx watch src/index.ts --stdio",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
+    "test": "jest",
     "inspect": "pnpx @modelcontextprotocol/inspector",
     "prepare": "pnpm run build && chmod +x ./dist/cli.js",
     "pub:release": "pnpm build && npm publish"
@@ -44,6 +45,7 @@
     "@modelcontextprotocol/sdk": "^1.7.0",
     "cors": "^2.8.5",
     "express": "^4.18.3",
+    "mongodb": "^6.5.0",
     "mssql": "^11.0.1",
     "pg": "^8.14.1",
     "sqlite3": "^5.1.7",

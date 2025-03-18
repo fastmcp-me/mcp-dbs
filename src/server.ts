@@ -5,6 +5,7 @@ import { Database } from './interfaces/database.js';
 import { SQLiteConfig } from './databases/sqlite.js';
 import { PostgresConfig } from './databases/postgres.js';
 import { MssqlConfig } from './databases/mssql.js';
+import { MongoDBConfig } from './databases/mongodb.js';
 
 /**
  * MCP Database Server
@@ -43,7 +44,7 @@ export class McpDatabaseServer {
       'connect-database',
       {
         connectionId: z.string(),
-        type: z.enum(['sqlite', 'postgres', 'mssql']),
+        type: z.enum(['sqlite', 'postgres', 'mssql', 'mongodb']),
         config: z.record(z.any())
       },
       async ({ connectionId, type, config }) => {
@@ -67,6 +68,9 @@ export class McpDatabaseServer {
               break;
             case 'mssql':
               db = DatabaseFactory.createDatabase(type, processedConfig as MssqlConfig);
+              break;
+            case 'mongodb':
+              db = DatabaseFactory.createDatabase(type, processedConfig as MongoDBConfig);
               break;
             default:
               throw new Error(`Unsupported database type: ${type}`);
@@ -332,6 +336,27 @@ export class McpDatabaseServer {
         }
         if (process.env.MCP_MSSQL_TRUST_SERVER_CERTIFICATE) {
           processedConfig.trustServerCertificate = process.env.MCP_MSSQL_TRUST_SERVER_CERTIFICATE === 'true';
+        }
+        break;
+      }
+      case 'mongodb': {
+        if (process.env.MCP_MONGODB_URI) {
+          processedConfig.uri = process.env.MCP_MONGODB_URI;
+        }
+        if (process.env.MCP_MONGODB_DATABASE) {
+          processedConfig.database = process.env.MCP_MONGODB_DATABASE;
+        }
+        if (process.env.MCP_MONGODB_MAX_POOL_SIZE) {
+          if (!processedConfig.options) {
+            processedConfig.options = {};
+          }
+          processedConfig.options.maxPoolSize = parseInt(process.env.MCP_MONGODB_MAX_POOL_SIZE, 10);
+        }
+        if (process.env.MCP_MONGODB_USE_UNIFIED_TOPOLOGY) {
+          if (!processedConfig.options) {
+            processedConfig.options = {};
+          }
+          processedConfig.options.useUnifiedTopology = process.env.MCP_MONGODB_USE_UNIFIED_TOPOLOGY === 'true';
         }
         break;
       }

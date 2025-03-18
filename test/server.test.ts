@@ -1,7 +1,23 @@
 import fs from 'fs';
 import path from 'path';
-import { McpDatabaseServer } from '../src/server.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+
+// Mock MongoDB before importing any file that uses it
+jest.mock('mongodb', () => {
+  return {
+    __esModule: true,
+    default: {
+      MongoClient: jest.fn(() => ({
+        connect: jest.fn(),
+        db: jest.fn(),
+        close: jest.fn()
+      }))
+    }
+  };
+});
+
+// Now import server after the mock
+import { McpDatabaseServer } from '../src/server.js';
 
 // We'll use the SQLite tests instead of creating complex MCP client tests
 // The functionality is already tested in sqlite.test.ts

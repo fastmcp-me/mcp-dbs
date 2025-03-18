@@ -7,6 +7,7 @@ A Model Context Protocol (MCP) implementation for connecting to and working with
 - SQLite
 - PostgreSQL
 - Microsoft SQL Server
+- MongoDB
 
 ## Installation
 
@@ -63,13 +64,8 @@ You can integrate mcp-dbs with Claude Desktop by adding it to your Claude config
         "--stdio"
       ],
       "env": {
-        "MCP_MSSQL_SERVER": "your-server-address",
-        "MCP_MSSQL_PORT": "1433",
-        "MCP_MSSQL_DATABASE": "your-database-name",
-        "MCP_MSSQL_USER": "your-username",
-        "MCP_MSSQL_PASSWORD": "your-password",
-        "MCP_MSSQL_ENCRYPT": "true",
-        "MCP_MSSQL_TRUST_SERVER_CERTIFICATE": "true"
+        "MCP_MONGODB_URI": "mongodb://localhost:27017",
+        "MCP_MONGODB_DATABASE": "your-database-name"
       }
     }
   }
@@ -82,7 +78,7 @@ Replace the environment variables with your own database connection details.
 - The `command` should be `node`
 - In `args`, provide the absolute path to the cli.js file in your mcp-dbs installation
 - Configure the appropriate environment variables for your database type (see the environment variables section below)
-- You can use environment variables for any of the supported databases (SQLite, PostgreSQL, or SQL Server)
+- You can use environment variables for any of the supported databases (SQLite, PostgreSQL, SQL Server, or MongoDB)
 
 ### Using with Claude
 
@@ -142,6 +138,16 @@ export MCP_MSSQL_ENCRYPT="true"
 export MCP_MSSQL_TRUST_SERVER_CERTIFICATE="true"
 ```
 
+#### MongoDB
+
+```bash
+# Set these environment variables before connecting
+export MCP_MONGODB_URI="mongodb://localhost:27017"
+export MCP_MONGODB_DATABASE="your-database-name"
+export MCP_MONGODB_MAX_POOL_SIZE="10"
+export MCP_MONGODB_USE_UNIFIED_TOPOLOGY="true"
+```
+
 These environment variables will take precedence over any configuration passed to the connect-database tool.
 
 ## MCP Tools
@@ -154,7 +160,7 @@ Connect to a database.
 
 Parameters:
 - `connectionId`: A unique identifier for the connection
-- `type`: Database type (`sqlite`, `postgres`, or `mssql`)
+- `type`: Database type (`sqlite`, `postgres`, `mssql`, or `mongodb`)
 - `config`: Database-specific configuration
 
 Example for SQLite:
@@ -202,6 +208,22 @@ Example for SQL Server:
 }
 ```
 
+Example for MongoDB:
+```json
+{
+  "connectionId": "my-mongodb-db",
+  "type": "mongodb",
+  "config": {
+    "uri": "mongodb://localhost:27017",
+    "database": "mydatabase",
+    "options": {
+      "maxPoolSize": 10,
+      "useUnifiedTopology": true
+    }
+  }
+}
+```
+
 ### disconnect-database
 
 Disconnect from a database.
@@ -215,8 +237,58 @@ Execute a query that returns results.
 
 Parameters:
 - `connectionId`: The connection ID
-- `query`: SQL query to execute
-- `params`: (Optional) Array of parameters for the query
+- `query`: SQL query or MongoDB aggregation pipeline (as JSON string)
+- `params`: (Optional) Array of parameters for the query. For MongoDB, the first parameter is the collection name.
+
+Example for SQL:
+```json
+{
+  "connectionId": "my-postgres-db",
+  "query": "SELECT * FROM users WHERE age > $1",
+  "params": [21]
+}
+```
+
+Example for MongoDB:
+```json
+{
+  "connectionId": "my-mongodb-db",
+  "query": "[{\"$match\": {\"age\": {\"$gt\": 21}}}, {\"$sort\": {\"name\": 1}}]",
+  "params": ["users"]
+}
+```
+
+Example for MongoDB (new format with embedded collection):
+```json
+{
+  "connectionId": "my-mongodb-db",
+  "query": "{\"collection\": \"users\", \"pipeline\": [{\"$match\": {\"age\": {\"$gt\": 21}}}, {\"$sort\": {\"name\": 1}}]}"
+}
+```
+
+Example for MongoDB (shell syntax):
+```json
+{
+  "connectionId": "my-mongodb-db",
+  "query": "db.getCollection('users').find({\"age\": {\"$gt\": 21}})"
+}
+```
+
+Example for MongoDB (direct collection reference shell syntax):
+```json
+{
+  "connectionId": "my-mongodb-db",
+  "query": "db.users.find({\"age\": {\"$gt\": 21}})"
+}
+```
+
+Example for MongoDB (raw command):
+```json
+{
+  "connectionId": "my-mongodb-db", 
+  "query": "{\"find\": \"users\", \"filter\": {\"age\": {\"$gt\": 21}}}"
+}
+```
 
 ### execute-update
 
@@ -224,8 +296,58 @@ Execute a query that doesn't return results (INSERT, UPDATE, DELETE).
 
 Parameters:
 - `connectionId`: The connection ID
-- `query`: SQL query to execute
-- `params`: (Optional) Array of parameters for the query
+- `query`: SQL query or MongoDB command (as JSON string)
+- `params`: (Optional) Array of parameters for the query. For MongoDB, the first parameter is the collection name.
+
+Example for SQL:
+```json
+{
+  "connectionId": "my-postgres-db",
+  "query": "INSERT INTO users (name, age) VALUES ($1, $2)",
+  "params": ["John Doe", 30]
+}
+```
+
+Example for MongoDB:
+```json
+{
+  "connectionId": "my-mongodb-db",
+  "query": "{\"insertOne\": {\"name\": \"John Doe\", \"age\": 30}}",
+  "params": ["users"]
+}
+```
+
+Example for MongoDB (new format with embedded collection):
+```json
+{
+  "connectionId": "my-mongodb-db",
+  "query": "{\"collection\": \"users\", \"operation\": {\"insertOne\": {\"name\": \"John Doe\", \"age\": 30}}}"
+}
+```
+
+Example for MongoDB (shell syntax):
+```json
+{
+  "connectionId": "my-mongodb-db",
+  "query": "db.getCollection('users').insertOne({\"name\": \"John Doe\", \"age\": 30})"
+}
+```
+
+Example for MongoDB (direct collection reference shell syntax):
+```json
+{
+  "connectionId": "my-mongodb-db",
+  "query": "db.users.insertOne({\"name\": \"John Doe\", \"age\": 30})"
+}
+```
+
+Example for MongoDB (raw command):
+```json
+{
+  "connectionId": "my-mongodb-db",
+  "query": "{\"insert\": \"users\", \"documents\": [{\"name\": \"John Doe\", \"age\": 30}]}"
+}
+```
 
 ## MCP Resources
 
