@@ -44,14 +44,62 @@ For tools that communicate over standard input/output, you can use the `--stdio`
 npx mcp-dbs --stdio
 ```
 
-### Tools
+## Claude Desktop Integration
+
+You can integrate mcp-dbs with Claude Desktop by adding it to your Claude configuration file. 
+
+### Configuration Steps
+
+1. Open or create your Claude Desktop configuration file
+2. Add the mcp-dbs configuration to the `mcpServers` section:
+
+```json
+{
+  "mcpServers": {
+    "mcp-dbs": {
+      "command": "node",
+      "args": [
+        "/path/to/your/mcp-dbs/dist/cli.js",
+        "--stdio"
+      ],
+      "env": {
+        "MCP_MSSQL_SERVER": "your-server-address",
+        "MCP_MSSQL_PORT": "1433",
+        "MCP_MSSQL_DATABASE": "your-database-name",
+        "MCP_MSSQL_USER": "your-username",
+        "MCP_MSSQL_PASSWORD": "your-password",
+        "MCP_MSSQL_ENCRYPT": "true",
+        "MCP_MSSQL_TRUST_SERVER_CERTIFICATE": "true"
+      }
+    }
+  }
+}
+```
+
+Replace the environment variables with your own database connection details. 
+
+### Notes
+- The `command` should be `node`
+- In `args`, provide the absolute path to the cli.js file in your mcp-dbs installation
+- Configure the appropriate environment variables for your database type (see the environment variables section below)
+- You can use environment variables for any of the supported databases (SQLite, PostgreSQL, or SQL Server)
+
+### Using with Claude
+
+Once configured, Claude will be able to access your database using the MCP tools described below. You can ask Claude to:
+- Connect to your database
+- Execute queries and get results
+- Explore your database schema
+- Work with tables and data
+
+## Tools
 
 - **connect-database**: Connect to a database
 - **disconnect-database**: Disconnect from a database
 - **execute-query**: Execute a query and return results
 - **execute-update**: Execute a query without returning results
 
-### Resources
+## Resources
 
 - **database-schema**: Get the full database schema
 - **table-schema**: Get the schema for a specific table
@@ -73,11 +121,11 @@ export MCP_SQLITE_CREATE_IF_NOT_EXISTS="true"
 
 ```bash
 # Set these environment variables before connecting
-export MCP_POSTGRES_HOST="localhost"
+export MCP_POSTGRES_HOST="your-postgres-host"
 export MCP_POSTGRES_PORT="5432"
-export MCP_POSTGRES_DATABASE="mydatabase"
-export MCP_POSTGRES_USER="postgres"
-export MCP_POSTGRES_PASSWORD="password"
+export MCP_POSTGRES_DATABASE="your-database-name"
+export MCP_POSTGRES_USER="your-username"
+export MCP_POSTGRES_PASSWORD="your-password"
 export MCP_POSTGRES_SSL="false"
 ```
 
@@ -85,11 +133,11 @@ export MCP_POSTGRES_SSL="false"
 
 ```bash
 # Set these environment variables before connecting
-export MCP_MSSQL_SERVER="dc2d-fnb-mssql-01.citigo.io"
+export MCP_MSSQL_SERVER="your-server-address"
 export MCP_MSSQL_PORT="1433"
-export MCP_MSSQL_DATABASE="HydraKiotVietShard1"
-export MCP_MSSQL_USER="sa"
-export MCP_MSSQL_PASSWORD="mssql#C1t1g0@sa"
+export MCP_MSSQL_DATABASE="your-database-name"
+export MCP_MSSQL_USER="your-username"
+export MCP_MSSQL_PASSWORD="your-password"
 export MCP_MSSQL_ENCRYPT="true"
 export MCP_MSSQL_TRUST_SERVER_CERTIFICATE="true"
 ```

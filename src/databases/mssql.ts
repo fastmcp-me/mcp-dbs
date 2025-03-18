@@ -1,4 +1,4 @@
-import * as mssql from 'mssql';
+import pkg from 'mssql';
 import { Database, SchemaInfo, TableSchema, ColumnInfo } from '../interfaces/database.js';
 
 /**
@@ -69,7 +69,7 @@ export interface MssqlConfig {
  * SQL Server database implementation
  */
 export class MssqlDatabase implements Database {
-  private pool: mssql.ConnectionPool | null = null;
+  private pool: any = null;
   private config: MssqlConfig;
   
   /**
@@ -84,7 +84,7 @@ export class MssqlDatabase implements Database {
    * Connect to the SQL Server database
    */
   async connect(): Promise<void> {
-    const poolConfig: mssql.config = {
+    const poolConfig: any = {
       server: this.config.server,
       port: this.config.port,
       database: this.config.database,
@@ -97,17 +97,21 @@ export class MssqlDatabase implements Database {
       connectionTimeout: this.config.connectionTimeout,
       requestTimeout: this.config.requestTimeout,
       pool: this.config.pool,
-      authentication: this.config.trusted ? {
+    };
+    
+    if (this.config.trusted) {
+      poolConfig.authentication = {
         type: 'ntlm',
         options: {
           domain: '',
           userName: this.config.user,
           password: this.config.password
         }
-      } : undefined
-    };
+      };
+    }
     
-    this.pool = await new mssql.ConnectionPool(poolConfig).connect();
+    this.pool = new pkg.ConnectionPool(poolConfig);
+    await this.pool.connect();
   }
   
   /**
@@ -128,7 +132,7 @@ export class MssqlDatabase implements Database {
   async query(query: string, params: any[] = []): Promise<any> {
     this.ensureConnected();
     
-    const request = this.pool!.request();
+    const request = this.pool.request();
     
     // Add parameters
     params.forEach((param, index) => {
@@ -150,7 +154,7 @@ export class MssqlDatabase implements Database {
   async execute(query: string, params: any[] = []): Promise<void> {
     this.ensureConnected();
     
-    const request = this.pool!.request();
+    const request = this.pool.request();
     
     // Add parameters
     params.forEach((param, index) => {

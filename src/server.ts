@@ -279,13 +279,6 @@ export class McpDatabaseServer {
   private processConfig(type: DatabaseType, config: Record<string, any>): Record<string, any> {
     const processedConfig = { ...config };
     
-    // Debug logging
-    console.error('Environment variables:');
-    console.error('MCP_MSSQL_SERVER:', process.env.MCP_MSSQL_SERVER);
-    console.error('MCP_MSSQL_PORT:', process.env.MCP_MSSQL_PORT);
-    console.error('MCP_MSSQL_DATABASE:', process.env.MCP_MSSQL_DATABASE);
-    console.error('MCP_MSSQL_USER:', process.env.MCP_MSSQL_USER);
-    
     // Apply environment variables if they exist
     switch (type) {
       case 'sqlite': {
