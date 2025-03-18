@@ -1,11 +1,6 @@
 #!/usr/bin/env node
-import { createServer } from './index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { McpDatabaseServer } from './server.js';
-import express from 'express';
-import cors from 'cors';
-import type { Request, Response } from 'express';
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -56,33 +51,5 @@ if (stdio) {
       process.exit(1);
     });
 } else {
-  // Start the SSE server
-  const app = express();
-  
-  // Add CORS middleware
-  app.use(cors());
-  
-  // Handle SSE requests
-  app.get('/mcp', (req: Request, res: Response) => {
-    // Set headers for SSE
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-    
-    // Create transport
-    const transport = new SSEServerTransport('/mcp', res);
-    
-    // Connect server to transport
-    server.getMcpServer().connect(transport)
-      .catch(error => {
-        console.error('Error connecting server:', error);
-        res.end();
-      });
-  });
-  
-  // Start the Express server
-  app.listen(port, () => {
-    console.log(`MCP Database Server running in SSE mode on port ${port}`);
-    console.log(`Connect to http://localhost:${port}/mcp`);
-  });
+  server.startHttpServer(port);
 } 
