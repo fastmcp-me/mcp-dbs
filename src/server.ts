@@ -30,7 +30,7 @@ export class McpDatabaseServer {
   constructor(options: { name?: string; version?: string } = {}) {
     this.server = new McpServer({
       name: options.name || 'MCP Database Server',
-      version: options.version || '1.0.0',
+      version: options.version || '1.0.4',
     });
 
     this.setupTools();
@@ -97,9 +97,8 @@ export class McpDatabaseServer {
       {
         connectionId: z.string(),
         type: z.enum(['sqlite', 'postgres', 'mssql', 'mongodb']),
-        config: z.record(z.any()),
       },
-      async ({ connectionId, type, config }) => {
+      async ({ connectionId, type }) => {
         try {
           // Check if connection already exists
           if (this.databases.has(connectionId)) {
@@ -109,7 +108,7 @@ export class McpDatabaseServer {
           }
 
           // Process config: merge with environment variables if available
-          const processedConfig = this.processConfig(type, config);
+          const processedConfig = this.processConfig(type);
 
           // Create database connection based on type
           let db: Database;
@@ -387,11 +386,8 @@ export class McpDatabaseServer {
    * @param config Provided configuration
    * @returns Processed configuration
    */
-  private processConfig(
-    type: DatabaseType,
-    config: Record<string, any>
-  ): Record<string, any> {
-    const processedConfig = { ...config };
+  private processConfig(type: DatabaseType): Record<string, any> {
+    const processedConfig = {} as Record<string, any>;
 
     // Apply environment variables if they exist
     switch (type) {
