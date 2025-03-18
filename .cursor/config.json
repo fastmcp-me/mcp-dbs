@@ -1,0 +1,94 @@
+{
+  "projectType": "typescript",
+  "settings": {
+    "typescript": {
+      "compilerOptions": {
+        "strict": true,
+        "esModuleInterop": true,
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "target": "ES2022"
+      }
+    },
+    "linting": {
+      "eslint": true,
+      "typescript": true
+    },
+    "aiAssistance": {
+      "modelSize": "large",
+      "codeAnalysis": true,
+      "autocomplete": true
+    }
+  },
+  "priorities": [
+    {
+      "name": "Modular Structure",
+      "description": "Maintain modular code structure with clear separation of concerns"
+    },
+    {
+      "name": "Type Safety",
+      "description": "Ensure strict typing throughout the codebase"
+    },
+    {
+      "name": "ESM Compatibility",
+      "description": "Maintain ESM module format compatibility and handle CommonJS interoperability"
+    }
+  ],
+  "codingRules": [
+    {
+      "name": "Use ESM import syntax",
+      "description": "Use ESM import syntax with .js extension in imports",
+      "examples": [
+        {
+          "good": "import { Database } from '../interfaces/database.js';",
+          "bad": "import { Database } from '../interfaces/database';"
+        }
+      ]
+    },
+    {
+      "name": "Handle CommonJS modules",
+      "description": "Use correct import pattern for CommonJS modules",
+      "examples": [
+        {
+          "good": "import pkg from 'pg';\nconst { Pool } = pkg;",
+          "bad": "import { Pool } from 'pg';"
+        }
+      ]
+    },
+    {
+      "name": "Export naming",
+      "description": "Use named exports for interfaces, types, and classes",
+      "examples": [
+        {
+          "good": "export interface DatabaseConfig { /* ... */ }",
+          "bad": "interface DatabaseConfig { /* ... */ }\nexport { DatabaseConfig };"
+        }
+      ]
+    },
+    {
+      "name": "Error handling",
+      "description": "Use async/await with proper try/catch blocks for error handling",
+      "examples": [
+        {
+          "good": "try {\n  await db.connect();\n} catch (error) {\n  console.error('Connection error:', error);\n}",
+          "bad": "db.connect().catch(error => console.error(error));"
+        }
+      ]
+    },
+    {
+      "name": "Documentation",
+      "description": "Document public interfaces, classes, and methods with JSDoc comments",
+      "examples": [
+        {
+          "good": "/**\n * Connect to the database\n * @throws Error if connection fails\n */\nasync connect(): Promise<void> { /* ... */ }",
+          "bad": "// Connect to the database\nasync connect(): Promise<void> { /* ... */ }"
+        }
+      ]
+    }
+  ],
+  "ignorePatterns": [
+    "node_modules/",
+    "dist/",
+    "*.log"
+  ]
+} 
