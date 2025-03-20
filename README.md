@@ -165,17 +165,12 @@ Connect to a database.
 Parameters:
 - `connectionId`: A unique identifier for the connection
 - `type`: Database type (`sqlite`, `postgres`, `mssql`, or `mongodb`)
-- `config`: Database-specific configuration
 
 Example for SQLite:
 ```json
 {
   "connectionId": "my-sqlite-db",
-  "type": "sqlite",
-  "config": {
-    "filename": "path/to/database.db",
-    "createIfNotExists": true
-  }
+  "type": "sqlite"
 }
 ```
 
@@ -183,15 +178,7 @@ Example for PostgreSQL:
 ```json
 {
   "connectionId": "my-postgres-db",
-  "type": "postgres",
-  "config": {
-    "host": "localhost",
-    "port": 5432,
-    "database": "mydatabase",
-    "user": "postgres",
-    "password": "password",
-    "ssl": false
-  }
+  "type": "postgres"
 }
 ```
 
@@ -199,16 +186,7 @@ Example for SQL Server:
 ```json
 {
   "connectionId": "my-mssql-db",
-  "type": "mssql",
-  "config": {
-    "server": "localhost",
-    "port": 1433,
-    "database": "mydatabase",
-    "user": "sa",
-    "password": "password",
-    "encrypt": true,
-    "trustServerCertificate": true
-  }
+  "type": "mssql"
 }
 ```
 
@@ -216,15 +194,7 @@ Example for MongoDB:
 ```json
 {
   "connectionId": "my-mongodb-db",
-  "type": "mongodb",
-  "config": {
-    "uri": "mongodb://localhost:27017",
-    "database": "mydatabase",
-    "options": {
-      "maxPoolSize": 10,
-      "useUnifiedTopology": true
-    }
-  }
+  "type": "mongodb"
 }
 ```
 
