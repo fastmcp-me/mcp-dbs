@@ -2,6 +2,10 @@
 
 A Model Context Protocol (MCP) implementation for connecting to and working with various database systems.
 
+<a href="https://glama.ai/mcp/servers/tvpshb3f1n">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/tvpshb3f1n/badge" />
+</a>
+
 ## Supported Databases
 
 - SQLite
