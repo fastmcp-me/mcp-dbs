@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/mseep-audited.png)](https://mseep.ai/app/cuongtl1992-mcp-dbs)
+
 # MCP Database Server
 
 A Model Context Protocol (MCP) implementation for connecting to and working with various database systems.
